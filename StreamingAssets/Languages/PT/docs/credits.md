@@ -1,0 +1,50 @@
+# Créditos
+
+## The Farmer Was Replaced
+
+### Programação, Game Design e Arte
+Timon Herzog
+
+### Música e Efeitos Sonoros
+Floris Demandt
+
+### Publicado por Metaroot
+Andri Weidmann
+Flurin Weidmann
+Nathalie Weidmann
+
+### Arte Principal
+Stephanie Stutz
+
+### Allcorrect
+Maria Pavlova (Tradução para Russo)
+Evgeniia Ushakova (Tradução para Russo)
+Melanie Chen (Tradução para Chinês)
+Siyoon Ji (Tradução para Coreano)
+Mina Horiba-Maguire (Tradução para Japonês)
+Danil Belousov (Gerente de Contas)
+Elizaveta Shevchenko (Líder de Equipe)
+Yulia Tregubova (Gerente de Projeto)
+
+### Colaboradores da Tradução da Comunidade
+HoshiyomiLusia
+Liuxun
+Davide Altamura
+Milan Tuma
+Ivan Bondar
+Jimmy Sheep
+Taigo Nakajima
+НУІ
+
+### Moderadores do Discord
+MrBlobfish
+Josh Markey
+danielrab
+Jeff Siebold aka Noon Knight
+
+### Agradecimentos Especiais
+Jonas Bornhöft
+ThatMerlinGuy
+Zoroark Zwart
+Ramón Buchenberger
+Swiss Game Hub
