@@ -6,15 +6,194 @@
     <title>The Farmer Was Replaced — Web</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-    <style>
-      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #1f2429; }
+  <!-- TFWR-STYLE -->
+    <style id="tfwr-style">
+      @font-face { font-family: 'TFWR Sans'; src: url('TemplateData/fonts/tfwr-regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+      @font-face { font-family: 'TFWR Sans'; src: url('TemplateData/fonts/tfwr-bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #1b1f1c; font-family: 'TFWR Sans', 'Segoe UI', system-ui, sans-serif; }
       #unity-container { position: fixed; inset: 0; width: 100%; height: 100%; }
-      #unity-canvas { width: 100vw !important; height: 100vh !important; display: block; background: #1f2429; }
+      #unity-canvas { width: 100vw !important; height: 100vh !important; display: block; background: #1b1f1c; }
       #unity-footer { display: none !important; }
-      #unity-loading-bar { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+      #unity-loading-bar { display: none !important; }
+      #unity-warning { z-index: 950; }
+
+      #tfwr-loading {
+        position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(1200px 700px at 50% 40%, #2d3328 0%, #1d221c 45%, #121512 100%);
+        color: #e8ede1; transition: opacity .55s ease;
+      }
+      #tfwr-loading.tfwr-hide { opacity: 0; pointer-events: none; }
+      .tfwr-load-card { width: min(440px, 86vw); text-align: center; padding: 0 10px; }
+      .tfwr-mark { margin-bottom: 14px; }
+      .tfwr-load-card h1 {
+        margin: 0; font-weight: 700; font-size: clamp(30px, 4.6vw, 46px); line-height: 1.02; letter-spacing: .01em;
+        color: #f4f7ec; text-shadow: 0 2px 22px rgba(0,0,0,.45);
+      }
+      .tfwr-load-card h1 span { color: #cfe45d; }
+      .tfwr-sub { margin-top: 14px; font-size: 11px; letter-spacing: .24em; color: #93a184; text-transform: uppercase; }
+      .tfwr-progress { margin-top: 28px; height: 9px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,.4); }
+      #tfwr-progress-fill { width: 0%; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #71860f 0%, #a9c22a 55%, #d9ef6a 100%); transition: width .28s ease; box-shadow: 0 0 14px rgba(190,222,80,.35); }
+      .tfwr-progress-row { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #a9b49b; }
+      #tfwr-percent { color: #d7e889; font-variant-numeric: tabular-nums; }
+      .tfwr-tip { margin-top: 16px; font-size: 11.5px; line-height: 1.55; color: #6e7a62; }
+
+      #tfwr-save-ui { position: fixed; left: 14px; bottom: 14px; z-index: 900; font-family: 'TFWR Sans', 'Segoe UI', system-ui, sans-serif; }
+      #tfwr-save-ui.tfwr-hidden { display: none; }
+      #tfwr-save-toggle {
+        display: flex; align-items: center; gap: 8px; padding: 9px 13px; cursor: pointer;
+        color: #dce8ad; background: rgba(24,28,22,.82); border: 1px solid rgba(198,224,90,.32);
+        border-radius: 9px; font-size: 12px; letter-spacing: .03em; backdrop-filter: blur(6px);
+        box-shadow: 0 3px 14px rgba(0,0,0,.35); transition: background .15s ease, border-color .15s ease;
+      }
+      #tfwr-save-toggle:hover { background: rgba(38,44,30,.94); border-color: rgba(210,235,105,.6); }
+      #tfwr-save-panel {
+        position: absolute; left: 0; bottom: 46px; width: 282px; padding: 14px;
+        background: rgba(22,26,20,.97); border: 1px solid rgba(198,224,90,.3); border-radius: 11px;
+        box-shadow: 0 10px 32px rgba(0,0,0,.5); color: #dfe7d2;
+      }
+      #tfwr-save-panel.tfwr-hidden { display: none; }
+      .tfwr-save-title { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #d9e986; margin-bottom: 10px; }
+      #tfwr-save-panel button {
+        display: block; width: 100%; margin: 0 0 8px; padding: 10px 12px; cursor: pointer;
+        background: #6c7d12; color: #f3f7e2; border: none; border-radius: 7px; font-size: 13px;
+        font-family: inherit; transition: background .15s ease;
+      }
+      #tfwr-save-panel button:hover { background: #82961a; }
+      #tfwr-save-status { min-height: 16px; margin-top: 4px; font-size: 12px; color: #cbe15f; line-height: 1.4; }
+      .tfwr-save-hint { margin-top: 8px; font-size: 11px; line-height: 1.5; color: #87937b; }
+      #tfwr-toast {
+        position: fixed; left: 50%; bottom: 74px; transform: translateX(-50%); max-width: min(520px, 86vw);
+        padding: 10px 16px; border-radius: 8px; background: rgba(20,24,18,.96); border: 1px solid rgba(198,224,90,.4);
+        color: #e9f0d5; font-size: 12.5px; line-height: 1.4; opacity: 0; pointer-events: none;
+        transition: opacity .2s ease; box-shadow: 0 8px 26px rgba(0,0,0,.45); z-index: 1001;
+      }
+      #tfwr-toast.show { opacity: 1; }
+      #tfwr-toast.tfwr-error { border-color: rgba(230,110,90,.65); color: #ffd8cf; }
+      @media (max-width: 560px) {
+        #tfwr-save-ui { left: 10px; bottom: 10px; }
+        #tfwr-save-panel { width: min(282px, calc(100vw - 20px)); }
+        .tfwr-tip { display: none; }
+      }
     </style>
+<!-- /TFWR-STYLE -->
   </head>
   <body>
+<!-- TFWR-UI-START -->
+    <div id="tfwr-loading">
+      <div class="tfwr-load-card">
+        <div class="tfwr-mark">
+          <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+            <path d="M32 58V22" stroke="#cfe45d" stroke-width="4" stroke-linecap="round"/>
+            <path d="M32 30c-10 0-16-5-18-13 9-1 15 3 18 13Z" fill="#8fae1b"/>
+            <path d="M32 42c10 0 16-5 18-13-9-1-15 3-18 13Z" fill="#cfe45d"/>
+            <path d="M32 24c-4-7-2-13 0-17 4 5 5 11 0 17Z" fill="#e6f092"/>
+          </svg>
+        </div>
+        <h1>The Farmer<br><span>Was Replaced</span></h1>
+        <div class="tfwr-sub">Оригинальная версия · WebGL</div>
+        <div class="tfwr-progress"><div id="tfwr-progress-fill"></div></div>
+        <div class="tfwr-progress-row"><span id="tfwr-status">Подготовка фермы…</span><span id="tfwr-percent">0%</span></div>
+        <div class="tfwr-tip">Первый запуск: около 60 МБ. Дальше игра грузится из кэша браузера.</div>
+      </div>
+    </div>
+
+    <div id="tfwr-save-ui" class="tfwr-hidden">
+      <button id="tfwr-save-toggle" type="button" title="Сохранения">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 3h12l4 4v14H4V3Zm3 1v6h9V4H7Zm0 10v6h10v-6H7Z" fill="currentColor"/></svg>
+        <span>Сохранения</span>
+      </button>
+      <div id="tfwr-save-panel" class="tfwr-hidden">
+        <div class="tfwr-save-title">Сохранения</div>
+        <button id="tfwr-export" type="button">Скачать сохранение</button>
+        <button id="tfwr-import" type="button">Загрузить сохранение</button>
+        <input id="tfwr-import-input" type="file" accept=".json,application/json" hidden>
+        <div id="tfwr-save-status"></div>
+        <div class="tfwr-save-hint">Перед скачиванием прогресс сохраняется автоматически. Загрузка заменит текущие сохранения и перезапустит игру.</div>
+      </div>
+      <div id="tfwr-toast"></div>
+    </div>
+
+    <script id="tfwr-ui-script">
+      (function () {
+        var loading = document.getElementById('tfwr-loading');
+        var fill = document.getElementById('tfwr-progress-fill');
+        var percent = document.getElementById('tfwr-percent');
+        var statusText = document.getElementById('tfwr-status');
+        var saveUi = document.getElementById('tfwr-save-ui');
+        var savePanel = document.getElementById('tfwr-save-panel');
+        var saveStatus = document.getElementById('tfwr-save-status');
+        var toast = document.getElementById('tfwr-toast');
+        var toastTimer = null;
+
+        window.tfwrSetProgress = function (p) {
+          var v = Math.max(0, Math.min(1, p || 0));
+          fill.style.width = (v * 100).toFixed(1) + '%';
+          percent.textContent = Math.round(v * 100) + '%';
+          if (v < 0.25) statusText.textContent = 'Загрузка ресурсов…';
+          else if (v < 0.7) statusText.textContent = 'Сборка фермы…';
+          else if (v < 1) statusText.textContent = 'Почти готово…';
+          else statusText.textContent = 'Запуск…';
+        };
+
+        window.tfwrOnLoaded = function () {
+          if (loading) {
+            loading.classList.add('tfwr-hide');
+            setTimeout(function () {
+              if (loading && loading.parentNode) loading.parentNode.removeChild(loading);
+            }, 650);
+          }
+          saveUi.classList.remove('tfwr-hidden');
+        };
+
+        window.tfwrOnError = function (message) {
+          statusText.textContent = 'Не удалось запустить игру';
+          percent.textContent = '';
+          var tip = document.querySelector('.tfwr-tip');
+          if (tip) tip.textContent = String(message || 'Ошибка загрузки');
+          fill.style.background = '#b3493c';
+        };
+
+        window.tfwrToast = function (message, isError) {
+          toast.textContent = message;
+          toast.classList.toggle('tfwr-error', !!isError);
+          toast.classList.add('show');
+          saveStatus.textContent = message || '';
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 4500);
+        };
+
+        document.getElementById('tfwr-save-toggle').addEventListener('click', function () {
+          savePanel.classList.toggle('tfwr-hidden');
+        });
+
+        document.getElementById('tfwr-export').addEventListener('click', function () {
+          if (!window.unityInstance) return;
+          saveStatus.textContent = 'Сохраняю и готовлю файл…';
+          window.unityInstance.SendMessage('TFWRWebSave', 'Export');
+        });
+
+        var input = document.getElementById('tfwr-import-input');
+        document.getElementById('tfwr-import').addEventListener('click', function () {
+          input.value = '';
+          input.click();
+        });
+        input.addEventListener('change', function () {
+          var file = input.files && input.files[0];
+          if (!file) return;
+          if (!confirm('Загрузить сохранение? Текущие сохранения будут заменены, игра перезапустится.')) return;
+          saveStatus.textContent = 'Читаю файл…';
+          var reader = new FileReader();
+          reader.onload = function () {
+            if (!window.unityInstance) { saveStatus.textContent = 'Игра ещё не готова.'; return; }
+            saveStatus.textContent = 'Загружаю сохранение…';
+            window.unityInstance.SendMessage('TFWRWebSave', 'Import', String(reader.result || ''));
+          };
+          reader.onerror = function () { saveStatus.textContent = 'Не удалось прочитать файл.'; };
+          reader.readAsText(file);
+        });
+      })();
+    </script>
+<!-- TFWR-UI-END -->
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
@@ -106,8 +285,8 @@
 
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.style.width = "100vw";
-        canvas.style.height = "100vh";
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
       }
 
       document.querySelector("#unity-loading-bar").style.display = "block";
@@ -116,16 +295,18 @@
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-
-              }).catch((message) => {
-                alert(message);
-              });
+        document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+        if (window.tfwrSetProgress) window.tfwrSetProgress(progress);
+      }).then((unityInstance) => {
+        document.querySelector("#unity-loading-bar").style.display = "none";
+        window.unityInstance = unityInstance;
+        if (window.tfwrOnLoaded) window.tfwrOnLoaded();
+        document.querySelector("#unity-fullscreen-button").onclick = () => {
+          unityInstance.SetFullscreen(1);
+        };
+      }).catch((message) => {
+        if (window.tfwrOnError) window.tfwrOnError(message); else alert(message);
+      });
             };
 
       document.body.appendChild(script);
