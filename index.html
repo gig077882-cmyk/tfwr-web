@@ -93,7 +93,7 @@
         <div class="tfwr-sub">Оригинальная версия · WebGL</div>
         <div class="tfwr-progress"><div id="tfwr-progress-fill"></div></div>
         <div class="tfwr-progress-row"><span id="tfwr-status">Подготовка фермы…</span><span id="tfwr-percent">0%</span></div>
-        <div class="tfwr-tip">Первый запуск: около 60 МБ. Дальше игра грузится из кэша браузера.</div>
+        <div class="tfwr-tip">Сборка 4896877e · Первый запуск: около 60 МБ. Дальше игра грузится из кэша браузера.</div>
       </div>
     </div>
 
@@ -191,6 +191,17 @@
           reader.onerror = function () { saveStatus.textContent = 'Не удалось прочитать файл.'; };
           reader.readAsText(file);
         });
+
+        var gameCanvas = document.getElementById('unity-canvas');
+        if (gameCanvas) {
+          gameCanvas.addEventListener('webglcontextlost', function (e) {
+            e.preventDefault();
+            if (window.tfwrToast) window.tfwrToast('WebGL-контекст потерян. Нажмите F5 или Ctrl+F5.', true);
+          }, false);
+          gameCanvas.addEventListener('webglcontextrestored', function () {
+            window.location.reload();
+          }, false);
+        }
       })();
     </script>
 <!-- TFWR-UI-END -->
@@ -238,12 +249,12 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/WebGL.loader.js";
+      var loaderUrl = buildUrl + "/WebGL.loader.js?v=4896877e";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebGL.data.unityweb",
-        frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
-        codeUrl: buildUrl + "/WebGL.wasm.unityweb",
+        dataUrl: buildUrl + "/WebGL.data.unityweb?v=4896877e",
+        frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb?v=4896877e",
+        codeUrl: buildUrl + "/WebGL.wasm.unityweb?v=4896877e",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "TheFarmerWasReplaced",
         productName: "TheFarmerWasReplaced",
